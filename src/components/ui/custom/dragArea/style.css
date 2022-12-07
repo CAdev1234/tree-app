@@ -1,0 +1,35 @@
+.drag-area {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    cursor: all-scroll;
+}
+
+.drag-area .up {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.drag-area .left {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translateY(-50%);
+}
+
+.drag-area .right {
+    position: absolute;
+    top: 50%;
+    right: 0%;
+    transform: translateY(-50%);
+}
+
+.drag-area .bottom {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}

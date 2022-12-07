@@ -1,0 +1,21 @@
+.header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 1px solid #cbd5e1;
+    padding: 15px 0;
+}
+
+.header .logo {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+
+.header .btn-group {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
