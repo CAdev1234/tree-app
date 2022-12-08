@@ -33,3 +33,27 @@
     left: 50%;
     transform: translateX(-50%);
 }
+
+.drag-area .modal {
+    position: fixed;
+    top: 50px;
+    left: 100px;
+    width: 250px;
+    padding: 30px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.drag-area .modal .option-btn-group {
+    display: flex;
+    column-gap: 20px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.drag-area .modal .option-btn-group button {
+    min-width: 100px;
+}

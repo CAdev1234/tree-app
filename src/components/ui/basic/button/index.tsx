@@ -24,6 +24,7 @@ export enum ButtonColorEnum {
 }
 
 interface ButtonProps {
+  m_ref?: React.RefObject<HTMLButtonElement>;
   m_type?: ButtonTypeEnum;
   m_color?: ButtonColorEnum;
   m_size?: ButtonSizeEnum;
@@ -32,6 +33,7 @@ interface ButtonProps {
 }
 
 const Button:React.FC<ButtonProps> = ({
+  m_ref,
   m_type = ButtonTypeEnum.Text,
   m_color = ButtonColorEnum.Default,
   m_size = ButtonSizeEnum.medium,
@@ -40,6 +42,7 @@ const Button:React.FC<ButtonProps> = ({
 }) => {
   return (
     <button
+      ref={m_ref}
       className={`btn ${m_type} ${m_color} ${m_size}`}
       onClick={onClick}
     >{children}</button>

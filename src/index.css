@@ -16,6 +16,14 @@
         font-weight: 500;
     }
     
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+    }
+    
      :root {
         --bg-color: #e2e8f0;
         --white-color: #FFFFFF;

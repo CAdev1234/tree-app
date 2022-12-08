@@ -8,3 +8,13 @@ input.input {
 input.input:focus {
     outline: none;
 }
+
+input.input.warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+input.input.secondary_1 {
+    background-color: var(--secondary-1-color);
+    color: white;
+}

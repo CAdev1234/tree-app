@@ -8,7 +8,8 @@ import {
   FaChevronRight,
   FaPen,
   FaPaperPlane,
-  FaTimes
+  FaTimes,
+  FaCheck
 
 } from 'react-icons/fa';
 interface FormattedIconProps {
@@ -32,8 +33,10 @@ const FormattedIcon:React.FC<FormattedIconProps> = ({ name }) => {
       return <FaChevronLeft />;
     case 'FaChevronRight':
       return <FaChevronRight />;
-    default:
+    case 'FaTimes':
       return <FaTimes />;
+    default:
+      return <FaCheck />;
   }
 };
 
