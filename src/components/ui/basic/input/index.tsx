@@ -16,6 +16,7 @@ interface InputProps {
   m_color?: InputColorEnum;
   m_default_value?: string | number;
   m_disabled?: boolean,
+  m_placeholder?: string,
   onChange?: (evt: React.ChangeEvent<HTMLInputElement>) => void
 }
 
@@ -23,6 +24,7 @@ const Input:React.FC<InputProps> = ({
   m_color = InputColorEnum.Default,
   m_default_value,
   m_disabled = false,
+  m_placeholder,
   onChange
 }) => {
   return (
@@ -31,6 +33,7 @@ const Input:React.FC<InputProps> = ({
         className={`input ${m_color}`}
         defaultValue={m_default_value}
         disabled={m_disabled}
+        placeholder={m_placeholder}
         onChange={onChange}
       />
     </>

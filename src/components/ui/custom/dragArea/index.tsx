@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { genUUID } from '../../../../utils/genUUID';
 import Button, { ButtonColorEnum, ButtonTypeEnum } from '../../basic/button';
-import TreeNodeBtnGroup from '../../basic/treeNodeBtnGroup';
+import TreeNodeBtnGroup, { TreeNodeTypeEnum } from '../../basic/treeNodeBtnGroup';
 import FormattedIcon from '../../icon/formattedIcon';
 import { Draggable } from '../draggable';
 import './style.css';
@@ -19,7 +19,8 @@ const DragArea = () => {
         parentKey: '',
         key: genUUID(),
         isEdit: true,
-        depth: 0
+        depth: 0,
+        type: TreeNodeTypeEnum.Category
       },
       children: [],
       __rd3t: {
@@ -30,34 +31,78 @@ const DragArea = () => {
     }
   )
   const [treeData, setTreeData] = useState<TreeNodeDatum>(tree.root)
+  const [activeNode, setActiveNode] = useState<TreeNodeDatum>({
+    name: '',
+    attributes: {
+      parentKey: '',
+      key: '',
+      isEdit: true,
+      depth: 0,
+      type: TreeNodeTypeEnum.Category
+    },
+    children: [],
+    __rd3t: {
+      collapsed: true,
+      depth: 0,
+      id: ''
+    }
+  })
   const [modalPos, setModalPos] = useState({posX: 0, posY: 0})
-  const [showModal, setShowModal] = useState<boolean>(false)
+  const [activeChooseModal, setActiveChooseModal] = useState<boolean>(false)
   
   const renderTreeNodeBtnGroup = (item: CustomNodeElementProps) => {
     return (
         <foreignObject width='100vw' height={700}>
           <TreeNodeBtnGroup
             item={item.nodeDatum}
-            onInsert={(pKey, domRect) => updateTree(pKey, TreeActionEnum.Insert, JSON.stringify(domRect))}
-            onUpdate={(name: string, key: string) => updateTree(key, TreeActionEnum.Update, name)}
-            onRemove={(key: string) => updateTree(key, TreeActionEnum.Remove, '')}
-            onSetEditable={(key) => updateTree(key, TreeActionEnum.Set_Editable, '')}
+            onInsert={(pKey) => checkShowModalOrNot(pKey)}
+            onUpdate={(name: string, key: string) => handleTreeData(key, TreeActionEnum.Update, name)}
+            onRemove={(key: string) => handleTreeData(key, TreeActionEnum.Remove, '')}
+            onSetEditable={(key) => handleTreeData(key, TreeActionEnum.Set_Editable, '')}
           />
         </foreignObject>
     )
   }
 
-  const updateTree = (key: string, action: TreeActionEnum, data: TreeNodeDatum | string) => {
+  const handleTreeData = (key: string, action: TreeActionEnum, data: TreeNodeDatum | string) => {
+    console.log("333333333333", key)
     const copyTreeData = JSON.parse(JSON.stringify(treeData))
-    if (action === TreeActionEnum.Insert) {
-      const newKey = genUUID()
-      const newItem: TreeNodeDatum = {
-        name: `category ${newKey}`,
+    const updated = tree.findByKeyWithAction(copyTreeData, key, action, data, 0)
+    setTreeData(updated)
+  }
+
+  const checkShowModalOrNot = async (key: string) => {
+    console.log("000000000000000000000000000", key)
+    const copyTreeData = JSON.parse(JSON.stringify(treeData))
+    const updated =  tree.findByKeyWithAction(copyTreeData, key, TreeActionEnum.Find, '', 0)
+    console.log("updated=", updated)
+    if (updated && updated.children) {
+      setActiveNode(updated)
+      if (updated.children.length === 0) showChooseModal(key)
+      else chooseType(String(updated.children[0].attributes?.type))
+    }
+  }
+
+  const showChooseModal = (key: string) => {
+    console.log("888888888888")
+    const plusBtnPos = document.querySelector(`button[data-node-key="${key}"]`)?.getBoundingClientRect()
+    if (plusBtnPos) {
+      setModalPos({...modalPos, posX: plusBtnPos.left, posY: plusBtnPos.top + plusBtnPos.height + 10})
+      setActiveChooseModal(true)
+    }
+  }
+
+  const chooseType = (type: string) => {
+    setActiveChooseModal(false)
+    const newKey = genUUID()
+    const newNode: TreeNodeDatum = {
+        name: '',
         attributes: {
-          parentKey: key,
+          parentKey: activeNode.attributes!.key,
           key: newKey,
           isEdit: true,
-          depth: 0
+          depth: 0,
+          type: type
         },
         children: [],
         __rd3t: {
@@ -66,28 +111,17 @@ const DragArea = () => {
           id: newKey
         }
       }
-      if (data) {
-        setModalPos({...modalPos, posX: JSON.parse(String(data)).left, posY: JSON.parse(String(data)).top + JSON.parse(String(data)).height + 10})
-        setShowModal(true)
-      }
-      data = newItem
-    }
-    const updated = tree.findByKeyWithAction(copyTreeData, key, action, data, 0)
-    setTreeData(updated)
+    handleTreeData(String(activeNode.attributes!.key), TreeActionEnum.Insert, newNode)
   }
 
-  const chooseType = () => {
-    setShowModal(false)
-  }
-
-  useEffect(() => {
-    console.log(treeData)
-  }, [treeData])
-
-  
-  useEffect(() => {
-    console.log(modalPos)
-  }, [modalPos])
+  // useEffect(() => {
+  //   console.log("aaaaaaaaaaaaaa", activeNode)
+  //   if (activeNode.children && activeNode.attributes) {
+  //     console.log("bbbbbbbbbbbbbbb")
+  //     if (activeNode.children.length === 0) showChooseModal(String(activeNode.attributes.parentKey))
+  //     else chooseType(String(activeNode.children[0].attributes?.type))
+  //   }
+  // }, [activeNode])
 
   return (
     <div className='drag-area' ref={dragAreaRef}>
@@ -95,7 +129,7 @@ const DragArea = () => {
         <Button
           m_type={ButtonTypeEnum.Icon}
           m_color={ButtonColorEnum.Secondary}
-          onClick={() => {console.log("33333333333333")}}
+          onClick={() => {}}
         >
           <FormattedIcon name='FaChevronUp' />
         </Button>
@@ -104,7 +138,7 @@ const DragArea = () => {
         <Button
           m_type={ButtonTypeEnum.Icon}
           m_color={ButtonColorEnum.Secondary}
-          onClick={() => {console.log("33333333333333")}}
+          onClick={() => {}}
         >
           <FormattedIcon name='FaChevronRight' />
         </Button>
@@ -113,7 +147,7 @@ const DragArea = () => {
         <Button
           m_type={ButtonTypeEnum.Icon}
           m_color={ButtonColorEnum.Secondary}
-          onClick={() => {console.log("33333333333333")}}
+          onClick={() => {}}
         >
           <FormattedIcon name='FaChevronDown' />
         </Button>
@@ -122,14 +156,14 @@ const DragArea = () => {
         <Button
           m_type={ButtonTypeEnum.Icon}
           m_color={ButtonColorEnum.Secondary}
-          onClick={() => {console.log("33333333333333")}}
+          onClick={() => {}}
         >
           <FormattedIcon name='FaChevronLeft' />
         </Button>
       </div>
 
       <div style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
-        {/* <Draggable dragAreaRef={dragAreaRef}></Draggable> */}
+        {/* <Draggable dragAreaRef={dragAreaRef}><div style={{width: '50px', height:'50px', backgroundColor: 'yellow'}}></div></Draggable> */}
         <div id="treeWrapper" style={{ width: '100%', height: `100%` }}>
           <Tree
             data={treeData}
@@ -141,17 +175,17 @@ const DragArea = () => {
         </div>
       </div>
 
-      {showModal && <div className='modal' style={{top: `${modalPos.posY}px`, left: `${modalPos.posX}px`}}>
+      {activeChooseModal && <div className='modal' style={{top: `${modalPos.posY}px`, left: `${modalPos.posX}px`}}>
         <h4>What do you want to create?</h4>
         <div className='option-btn-group'>
           <Button
             m_color={ButtonColorEnum.Primary}
-            onClick={() => chooseType()}
-          >CATEGORY</Button>
+            onClick={() => chooseType(TreeNodeTypeEnum.Category)}
+          >{TreeNodeTypeEnum.Category.toUpperCase()}</Button>
           <Button
             m_color={ButtonColorEnum.Primary}
-            onClick={() => chooseType()}
-          >SERVICE</Button>
+            onClick={() => chooseType(TreeNodeTypeEnum.Service)}
+          >{TreeNodeTypeEnum.Service.toUpperCase()}</Button>
         </div>
       </div>}
     </div>

@@ -28,6 +28,7 @@ interface ButtonProps {
   m_type?: ButtonTypeEnum;
   m_color?: ButtonColorEnum;
   m_size?: ButtonSizeEnum;
+  m_data_attr_key?: string;
   onClick: () => void;
   children: ReactNode;
 }
@@ -37,6 +38,7 @@ const Button:React.FC<ButtonProps> = ({
   m_type = ButtonTypeEnum.Text,
   m_color = ButtonColorEnum.Default,
   m_size = ButtonSizeEnum.medium,
+  m_data_attr_key,
   onClick,
   children
 }) => {
@@ -44,6 +46,7 @@ const Button:React.FC<ButtonProps> = ({
     <button
       ref={m_ref}
       className={`btn ${m_type} ${m_color} ${m_size}`}
+      data-node-key={m_data_attr_key}
       onClick={onClick}
     >{children}</button>
   )

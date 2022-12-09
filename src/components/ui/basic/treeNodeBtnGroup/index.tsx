@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import FormattedIcon from '../../icon/formattedIcon';
 import Button, { ButtonColorEnum, ButtonSizeEnum, ButtonTypeEnum } from '../button';
 import Input, { InputColorEnum } from '../input';
@@ -6,9 +6,13 @@ import './style.css'
 
 import { RawNodeDatum } from 'react-d3-tree/lib/types/common';
 
+export enum TreeNodeTypeEnum {
+  Service = 'service',
+  Category = 'category'
+}
 interface TreeNodeBtnGroupProps {
   item: RawNodeDatum;
-  onInsert: (parentKey: string, domRect?: DOMRect) => void;
+  onInsert: (parentKey: string, name: string, domRect?: DOMRect) => void;
   onRemove: (key: string) => void;
   onUpdate: (name: string, key: string) => void;
   onSetEditable: (key: string) =>  void;
@@ -22,12 +26,9 @@ const TreeNodeBtnGroup:React.FC<TreeNodeBtnGroupProps> = ({
   onSetEditable,
 }) => {
   const addBtnRef = useRef<HTMLButtonElement>(null);
-  const [name, setName] = useState(item.name);
+  const [name, setName] = useState<string>('');
   const insert = (key: string) => {
-    if (addBtnRef.current) {
-      console.log(addBtnRef.current.getBoundingClientRect())
-      onInsert(key, addBtnRef.current.getBoundingClientRect());
-    }else onInsert(key);
+    onInsert(key, name)
   }
   const update = () => {
     if (item.attributes) onUpdate(name, String(item.attributes.key));
@@ -35,6 +36,9 @@ const TreeNodeBtnGroup:React.FC<TreeNodeBtnGroupProps> = ({
   const setEditable = () => {
     if (item.attributes) onSetEditable(String(item.attributes.key));
   }
+  // useEffect(() => {
+  //   console.log(name)
+  // }, [name])
   return (
     <>
       <div className='tree-node-btn-group'>
@@ -43,11 +47,13 @@ const TreeNodeBtnGroup:React.FC<TreeNodeBtnGroupProps> = ({
             <Input
               m_default_value={item.name}
               m_disabled={true}
+              m_placeholder={`${item.attributes.type} name`}
             />
             <Button 
               m_type={ButtonTypeEnum.Circle} 
               m_size={ButtonSizeEnum.small} 
               m_color={ButtonColorEnum.Secondary}
+              m_data_attr_key={String(item.attributes.key)}
               onClick={() => insert(String(item.attributes?.key))}
             >
               <FormattedIcon name='FaPlus' />
@@ -59,12 +65,13 @@ const TreeNodeBtnGroup:React.FC<TreeNodeBtnGroupProps> = ({
         {item.attributes && item.attributes.parentKey !== '' && 
           <>
             <Input
-              m_default_value={item.name}
               m_disabled={!item.attributes.isEdit}
               m_color={item.attributes.isEdit ? InputColorEnum.Default : item.attributes.depth > 1 ? InputColorEnum.Secondary_1 : InputColorEnum.Warning}
+              m_placeholder={`${item.attributes.type} name`}
               onChange={(evt) => {
                 setName(evt.currentTarget.value)
               }}
+              m_default_value={String(item.attributes.key)}
             />
             {!item.attributes.isEdit &&
             <>
@@ -73,6 +80,7 @@ const TreeNodeBtnGroup:React.FC<TreeNodeBtnGroupProps> = ({
                 m_type={ButtonTypeEnum.Circle} 
                 m_size={ButtonSizeEnum.small} 
                 m_color={ButtonColorEnum.Secondary}
+                m_data_attr_key={String(item.attributes.key)}
                 onClick={() => insert(String(item.attributes?.key))}
               >
                 <FormattedIcon name='FaPlus' />

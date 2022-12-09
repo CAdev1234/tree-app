@@ -14,23 +14,23 @@ const Header = () => {
       <span className='btn-group'>
         <Button
           m_color={ButtonColorEnum.Primary}
-          onClick={() => {console.log("33333333333333")}}
+          onClick={() => {}}
         >LIST VIEW</Button>
         <Button
           m_type={ButtonTypeEnum.Icon}
-          onClick={() => {console.log("33333333333333")}}
+          onClick={() => {}}
         >
           <FormattedIcon name='FaPaperPlane' />
         </Button>
         <Button
           m_type={ButtonTypeEnum.Icon}
-          onClick={() => {console.log("33333333333333")}}
+          onClick={() => {}}
         >
           <FormattedIcon name='FaMinus' />
         </Button>
         <Button
           m_type={ButtonTypeEnum.Icon}
-          onClick={() => {console.log("33333333333333")}}
+          onClick={() => {}}
         >
           <FormattedIcon name='FaPlus' />
         </Button>
